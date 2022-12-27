@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  
+  client:
+    build: client
+    stdin_open: true
+    ports:
+      - 80:3000
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+
+  server:
+    build: server
+    ports:
+      - 5000:5000
+    volumes:
+      - ./server/src:/src
+
+  db:
+    image: mongo:4.2.6
+    ports:
+      - 27017:27017
+      - 27018:27018
+      - 27019:27019
+    volumes:
+      - ./scripts:/scripts
+      - ./data/db:/data/db

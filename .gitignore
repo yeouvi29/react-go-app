@@ -1,0 +1,13 @@
+.idea/
+.DS_Store
+
+node_modules/
+npm-debug.log*
+
+data/*
+!data/.gitkeep
+
+client/package-lock.json
+
+server/main
+
