@@ -18,7 +18,7 @@ class App extends React.Component {
 
   getNewQuoteFromServer() {
 
-      fetch("http://localhost:5000/quote")
+      fetch("http://localhost:8080/quote")
         .then(res => res.json())
         .then(
             (result) => {

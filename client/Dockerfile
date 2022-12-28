@@ -5,6 +5,7 @@ WORKDIR /app
 
 # set env
 ENV PATH /app/node_modules/.bin:$PATH
+ENV PORT=80
 
 # set dependencies
 COPY package.json /app
