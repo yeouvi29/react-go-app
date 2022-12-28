@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-    /app/main
+    npm start
 else
     $*
 fi
