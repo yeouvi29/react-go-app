@@ -17,6 +17,9 @@ services:
       - 8080:8080
     volumes:
       - ./server/src:/src
+    environment:
+      - MONGODB_URI=mongodb://db:27017/
+      - PORT=8080
 
   db:
     image: mongo:4.2.6

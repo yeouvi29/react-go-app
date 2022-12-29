@@ -3,16 +3,17 @@ A simple application build using JavaScript/React frontend and GoLang backend.
 
 # Start
 ```
-% docker-compose up -d
-Creating network "react-flask-app_default" with the default driver
-Creating react-flask-app_db_1     ... done
-Creating react-flask-app_client_1 ... done
-Creating react-flask-app_server_1 ... done
+% docker-compose up -d --force-recreate
+[+] Running 4/4
+ ⠿ Network react-go-app_default     Created
+ ⠿ Container react-go-app-client-1  Started
+ ⠿ Container react-go-app-server-1  Started
+ ⠿ Container react-go-app-db-1      Started
 ```
 
 # Initialize the sample database
 ```
-% docker exec -it react-flask-app_db_1 mongo /scripts/InitDB.js
+% docker exec -it `docker ps -q -f name=db` mongo /scripts/InitDB.js
 MongoDB shell version v4.2.6
 connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
 Implicit session: session ...
