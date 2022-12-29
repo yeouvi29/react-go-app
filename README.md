@@ -1,5 +1,6 @@
 # React Go App
 A simple application build using JavaScript/React frontend and GoLang backend. 
+![Application Structure](images/React-Go-Mongo.png)
 
 # Start
 ```
@@ -26,6 +27,14 @@ Inserting: 5 Logic will get you from A to B. Imagination will take you everywher
 Inserting: 6 Insanity is doing the same thing over and over again and expecting different results
 Inserting: 7 The hardest thing to understand in the world is the income tax
 ```
+# Test local server
+```
+% curl -i http://localhost:8080/quote
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Content-Type: application/json
+Date: Thu, 29 Dec 2022 23:10:46 GMT
+Content-Length: 129
 
-# Further reading
-TBD
+{"ObjectId":"63acf4244efcbcd7fecfbf8b","id":3,"quote":"Life is like riding a bicycle. To keep your balance you must keep moving"}
+```
