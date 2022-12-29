@@ -17,9 +17,9 @@ import (
 )
 
 type Quote struct {
-    ObjectId    primitive.ObjectID `bson:"_id"`
-    Id          int
-    Quote       string
+    ObjectId    primitive.ObjectID  `bson:"_id"`
+    Id          int                 `json:"id"`
+    Quote       string              `json:"quote"`
 }
 
 func main() {
@@ -39,10 +39,18 @@ func main() {
 }
 
 //
+// Helper function to enable cors
+//
+func enableCors(w *http.ResponseWriter) {
+    (*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
+//
 // Get root (/)
 // 
 func getRoot(w http.ResponseWriter, r *http.Request) {
     fmt.Println("GET /")
+    enableCors(&w)
     io.WriteString(w, "OK\n")
 }
 
@@ -52,6 +60,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 func getQuote(w http.ResponseWriter, r *http.Request) {
 
     fmt.Println("GET /quote")
+    enableCors(&w)
 
     // step 1: connect to the database
     uri := os.Getenv("MONGODB_URI")
