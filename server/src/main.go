@@ -107,5 +107,6 @@ func getQuote(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    w.Header().Set("Content-Type", "application/json")
     io.WriteString(w, string(resp))
 }
