@@ -1,8 +1,9 @@
-module github.com/naveed125/react-go-app/tree/main/server/src
+module github.com/yeouvi29/react-go-app/tree/main/server/src
 
 go 1.19
 
 require (
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

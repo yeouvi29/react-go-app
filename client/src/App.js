@@ -1,58 +1,37 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
 import './App.css';
 
-class App extends React.Component {
-
-  constructor(props) {
-
-    super(props)
-
-    this.state = {
-        success: false,
-        quote: "Loading..."
-    }
-
-    // This binding is necessary to make `this` work in the callback
-    this.handleClick = this.handleClick.bind(this);
+function App() {
+const [status, setStatus] = useState({success: false, quote: "Loading..."})
+const getNewQuoteFromServer = async()=> {
+  try{const response = await fetch("http://localhost:8080/quote");
+  const data = await response.json();
+  if (data) {
+    setStatus({
+      success: false,
+      quote: data.quote + " - Einstein."
+  })
+  }} catch(err) {
+    setStatus({
+      success:true, quote:"Failed to get data. " + err.message
+    })
   }
-
-  getNewQuoteFromServer() {
-
-      fetch("http://localhost:8080/quote")
-        .then(res => res.json())
-        .then(
-            (result) => {
-                this.setState ({
-                    success: false,
-                    quote: result.quote + " - Einstein."
-                })
-            },
-            (error) => {
-                this.setState({
-                    success: true,
-                    quote: "Failed to get data. " + error
-                })
-            }
-        )
-  }
-
-  componentDidMount() {
-    this.getNewQuoteFromServer()
-  }
-
-  handleClick(e) {
-    this.getNewQuoteFromServer()
-  }
-
-  render() {
-
-      return (
-        <div className="App" onClick={this.handleClick}>
-              {this.state.quote}
-        </div>
-      );
-  }
-
+  
+}
+  const handleClick = ()=> {
+  getNewQuoteFromServer()
+}
+useEffect(()=> {
+getNewQuoteFromServer()
+}, [])
+  return (
+    <div className="App">
+      <header className="App-header">
+        <button onClick={handleClick}>get a new quote</button>
+        <h3>{status.quote}</h3>
+      </header>
+    </div>
+  );
 }
 
 export default App;
