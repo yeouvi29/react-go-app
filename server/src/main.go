@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,6 +22,9 @@ type Quote struct {
 	ObjectId primitive.ObjectID `bson:"_id"`
 	Id       int                `json:"id"`
 	Quote    string             `json:"quote"`
+}
+type Client struct {
+	client *redis.Client
 }
 
 func main() {
@@ -37,6 +42,7 @@ func main() {
 		fmt.Println("Success.")
 	}
 }
+
 func (q Quote) MarshalBinary() ([]byte, error) {
 	return []byte(fmt.Sprintf("%v-%v", q.Id, q.Quote)), nil
 }
@@ -51,6 +57,56 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("GET /")
 	enableCors(&w)
 	io.WriteString(w, "OK\n")
+}
+
+func newRedis() (*Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:        "redis:6379",
+		DB:          0, // use default DB
+		DialTimeout: 100 * time.Millisecond,
+		ReadTimeout: 100 * time.Millisecond,
+	})
+
+	if _, err := client.Ping().Result(); err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		client: client,
+	}, nil
+}
+
+func (c *Client) getQuotes() (quotes []Quote) {
+	val, err := c.client.Get("quotes").Result()
+	if err != nil {
+		return nil
+	}
+
+	resp := []Quote{}
+	err = json.Unmarshal([]byte(val), &resp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	payload, err := json.Marshal(resp)
+	if err != nil {
+		panic(err)
+	}
+
+	// Publish using Redis PubSub
+	if err := c.client.Publish("send-user-name", payload).Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return resp
+}
+
+func (c *Client) setQuotes(quotes []Quote) {
+	json, err := json.Marshal(quotes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.client.Set("quotes", json, 20*time.Second)
 }
 
 // Get a random Quote
@@ -84,7 +140,6 @@ func getQuote(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
 	// step 1: connect to the database
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
@@ -129,6 +184,7 @@ func getQuote(w http.ResponseWriter, r *http.Request) {
 	// step 3: return a random quote
 	rand.Seed(time.Now().Unix())
 	result := results[rand.Int()%len(results)]
+	fmt.Println("Set quotes to redis")
 	redis.setQuotes(results)
 	cursor.Decode(&result)
 
